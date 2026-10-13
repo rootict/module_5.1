@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 05 - Prompt Engineering & Working with AI (Light Theme)</title>
+    <style>
+        /* ======================================================= */
+        /* CORE STYLES (Light Blue Theme & Enhanced Typography)    */
+        /* ======================================================= */
+        :root { 
+            --bg-color: #e0f2fe; /* Light Blue Background */
+            --primary: #0ea5e9; /* Sky Blue for primary elements */
+            --accent: #e11d48; /* Rose for weak/alerts */
+            --whatsapp: #16a34a; /* Green for strong/success */
+            --text-main: #0f172a; /* Dark slate for main text */
+            --text-muted: #475569; /* Slate for muted text */
+            --panel-bg: rgba(255, 255, 255, 0.95); /* White panels */
+            --gold: #d97706; /* Amber for context */
+            --cyan: #0891b2; /* Cyan for tech/code */
+            --purple: #7e22ce; /* Purple for professional emails */
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; }
+        html { font-size: 16px; } 
+        @media (min-width: 1920px) { html { font-size: 20px; } } 
+        @media (min-width: 2560px) { html { font-size: 26px; } } 
+        @media (min-width: 3800px) { html { font-size: 36px; } }
+        
+        body { background-color: var(--bg-color); color: var(--text-main); overflow: hidden; width: 100vw; height: 100vh; background-image: radial-gradient(circle at center, #f0f9ff 0%, #e0f2fe 100%); }
+        #presentation { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        .slide { position: absolute; width: 94%; max-width: 1650px; height: 88%; opacity: 0; transform: scale(0.95) translateY(20px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; justify-content: center; pointer-events: none; overflow-y: auto; scrollbar-width: none; }
+        .slide::-webkit-scrollbar { display: none; } 
+        .slide.active { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        
+        h1 { font-size: 3.8rem; color: var(--primary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 4px 15px rgba(14, 165, 233, 0.2); font-weight: 800; line-height: 1.1;}
+        h2 { font-size: 2.2rem; margin-bottom: 25px; color: var(--text-muted); font-weight: 600; line-height: 1.3;} 
+        p, li { font-size: 1.4rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 15px; }
+        .module-tag { display:inline-block; border: 1px solid var(--cyan); padding: 6px 20px; border-radius: 30px; font-weight: bold; letter-spacing: 1.5px; margin-bottom: 15px; font-size: 1rem; align-self: flex-start; background: rgba(8, 145, 178, 0.1); color: var(--cyan); text-transform: uppercase;}
+
+        .landscape-box { position: relative; width: 100%; height: 50vh; min-height: 400px; max-height: 650px; background: var(--panel-bg); border-radius: 20px; border: 1px solid #cbd5e1; margin-top: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); overflow: visible; flex-shrink: 0; display: flex; flex-direction: column;}
+        .desc-box { margin-top: 25px; background: rgba(255, 255, 255, 0.95); border-left: 6px solid var(--primary); padding: 18px 30px; border-radius: 12px; height: auto; font-size: 1.4rem; line-height: 1.6; color: var(--text-main); opacity: 0; transition: opacity 0.5s; z-index: 50; position: relative; overflow: visible; display: block; box-shadow: 0 10px 20px rgba(0,0,0,0.05); font-weight: 600;}
+        
+        /* SLIDE 1: AI Intro */
+        .ai-landscape { border-color: var(--purple); justify-content: center; align-items: center;}
+        .ai-brain-node .icon-circle { background: white; color: var(--purple); border-color: #cbd5e1; }
+        .ai-brain-node.active-node .icon-circle { border-color: var(--purple); background: rgba(126, 34, 206, 0.05); box-shadow: 0 0 25px rgba(126, 34, 206, 0.4); }
+        .ai-brain-node.processing .icon-circle { box-shadow: 0 0 40px rgba(126, 34, 206, 0.5); transform: scale(1.15); animation: brainPulse 1s infinite alternate; }
+        @keyframes brainPulse { 0% { filter: brightness(1); } 100% { filter: brightness(1.2) drop-shadow(0 0 20px var(--purple)); } }
+        .chat-bubble { position: absolute; top: -75px; left: 50%; transform: translateX(-50%); background: white; padding: 10px 20px; border-radius: 25px; font-size: 1.4rem; opacity: 0; transition: opacity 0.3s; white-space: nowrap; z-index: 10; border: 2px solid var(--purple); box-shadow: 0 10px 20px rgba(126, 34, 206, 0.15); font-weight: bold; color: var(--purple);}
+        .gear-spin { display: inline-block; animation: spinGear 2s linear infinite; }
+        @keyframes spinGear { 100% { transform: rotate(360deg); } }
+
+        .net-node { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 5; opacity: 0.5; transition: all 0.4s ease; transform: translate(-50%, -50%) scale(1); width: 160px; }
+        .net-node.active-node { opacity: 1 !important; transform: translate(-50%, -50%) scale(1.15) !important; filter: brightness(1.1); }
+        .icon-circle { font-size: 4rem; background: white; width: 100px; height: 100px; margin: 0 auto; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 3px solid #cbd5e1; transition: all 0.4s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); position: relative; z-index: 10; color: var(--text-main);}
+        .node-label { margin-top: 15px; font-size: 1.3rem; font-weight: 800; color: var(--text-muted); text-align: center; background: #f8fafc; padding: 6px 15px; border-radius: 20px; border: 1px solid #e2e8f0; transition: all 0.3s;}
+        .net-node.active-node .icon-circle { border-color: var(--primary); box-shadow: 0 0 30px rgba(14, 165, 233, 0.3); background: rgba(14, 165, 233, 0.05); color: var(--primary);}
+        .net-node.active-node .node-label { background: white; color: var(--primary); border: 2px solid var(--primary); box-shadow: 0 5px 15px rgba(14, 165, 233, 0.2);}
+
+        .data-packet { position: absolute; z-index: 100; padding: 12px 25px; border-radius: 30px; font-size: 1.3rem; font-weight: bold; color: white; display: none; align-items: center; gap: 10px; transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1), top 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s, opacity 0.4s; border: 2px solid rgba(255,255,255,0.8); transform: translate(-50%, -50%) scale(1); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .data-packet.google { background: var(--primary); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4); }
+        .data-packet.whatsapp { background: var(--whatsapp); box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4); }
+        .data-packet.absorbed { transform: translate(-50%, -50%) scale(0) !important; opacity: 0 !important; }
+
+        /* Anatomy Cards */
+        .comparison-layout { display: flex; gap: 30px; width: 100%; margin-top: 20px; height: 100%;}
+        .info-card { flex: 1; background: white; border: 2px dashed #cbd5e1; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); transform: translateY(40px); opacity: 0.4; filter: grayscale(1); display: flex; flex-direction: column; position: relative; overflow-y: auto; transition: all 0.5s; scrollbar-width: none;}
+        .info-card::-webkit-scrollbar { display: none; }
+        .info-card.active-card { opacity: 1; filter: grayscale(0); transform: translateY(0); border-style: solid; }
+        
+        .card-header { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; }
+        .card-icon { width: 80px; height: 80px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 3rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+        .card-title-box h3 { font-size: 2.2rem; color: var(--text-main); font-weight: 800;} 
+        .card-title-box span { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);}
+        
+        .code-snippet { background: #1e293b; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 1.25rem; color: #f8fafc; border: 1px solid #cbd5e1; margin-top: auto; line-height: 1.6; opacity: 0; transform: translateY(10px); transition: all 0.5s; box-shadow: 0 10px 20px rgba(0,0,0,0.1); font-weight: 500;}
+        .code-snippet.show { opacity: 1; transform: translateY(0); }
+        
+        /* FORMATTING TAGS */
+        .hl-task { color: #38bdf8; font-weight: bold; } 
+        .hl-context { color: #fcd34d; font-weight: bold; } 
+        .hl-constraint { color: #fda4af; font-weight: bold; } 
+        .hl-format { color: #86efac; font-weight: bold; }
+
+        /* BATTLE SLIDES (Context Zones) */
+        .context-split { display: flex; width: 100%; height: 100%; justify-content: space-around; align-items: stretch; position: relative; padding: 20px; gap: 20px; }
+        .context-zone { flex: 1; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 15px; display: flex; flex-direction: column; align-items: center; padding: 25px; position: relative; transition: all 0.5s; overflow-y: auto; overflow-x: hidden; scrollbar-width: none;}
+        .context-zone::-webkit-scrollbar { display: none; }
+        
+        .context-zone.active-zone { border-style: solid; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: white; transform: scale(1.02); z-index: 5;}
+        .cz-weak.active-zone { border-color: var(--accent); }
+        .cz-strong.active-zone { border-color: var(--whatsapp); }
+        
+        .cz-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 25px; padding: 10px 25px; border-radius: 30px; z-index: 10; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .cz-weak .cz-title { background: rgba(225, 29, 72, 0.1); color: var(--accent); border: 1px solid var(--accent); }
+        .cz-strong .cz-title { background: rgba(22, 163, 74, 0.1); color: var(--whatsapp); border: 1px solid var(--whatsapp); }
+        
+        .chat-ui { width: 100%; display: flex; flex-direction: column; gap: 18px; z-index: 10; }
+        .chat-msg { padding: 18px 25px; border-radius: 20px; font-size: 1.25rem; max-width: 95%; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); line-height: 1.6; margin-bottom: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .chat-msg.show { opacity: 1; transform: translateY(0); }
+        
+        .msg-user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500;}
+        .msg-ai { background: #f1f5f9; color: var(--text-main); align-self: flex-start; border: 1px solid #cbd5e1; border-bottom-left-radius: 4px; }
+        
+        .cz-weak .msg-ai { border-color: rgba(225, 29, 72, 0.3); background: rgba(225, 29, 72, 0.03); }
+        .cz-strong .msg-ai { border-color: rgba(22, 163, 74, 0.3); background: rgba(22, 163, 74, 0.03); }
+        
+        .typing-indicator { display: flex; gap: 6px; padding: 12px 18px; background: rgba(0,0,0,0.05); border-radius: 20px; width: fit-content; align-self: flex-start; opacity: 0; transition: opacity 0.3s; }
+        .typing-indicator.show { opacity: 1; }
+        .t-dot { width: 10px; height: 10px; background: var(--text-muted); border-radius: 50%; animation: typeBounce 1.4s infinite ease-in-out both; }
+        .cz-weak .t-dot { background: var(--accent); }
+        .cz-strong .t-dot { background: var(--whatsapp); }
+        .t-dot:nth-child(1) { animation-delay: -0.32s; } .t-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        /* Slide 5: Constraints Filter */
+        .cn-filter-box { width: 450px; height: 320px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 20px; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+        .cn-filter-line { position: absolute; top: 50%; left: 0; width: 100%; height: 6px; background: var(--accent); transform: translateY(-50%); opacity: 0; transition: all 0.5s; box-shadow: 0 0 20px var(--accent); z-index: 5; }
+        .cn-filter-line.active { opacity: 1; }
+        .cn-word { position: absolute; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 1.3rem; background: white; color: var(--text-main); border: 2px solid #cbd5e1; transition: all 0.5s; opacity: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+        .cn-word.show { opacity: 1; }
+        .cn-word.rejected { background: rgba(225, 29, 72, 0.1); border-color: var(--accent); color: var(--accent); animation: rejectVaporize 0.8s forwards; }
+        .cn-word.passed { background: rgba(22, 163, 74, 0.1); border-color: var(--whatsapp); color: var(--whatsapp); filter: drop-shadow(0 5px 15px rgba(22, 163, 74, 0.2)); transform: scale(1.1); }
+        @keyframes rejectVaporize { 0% { transform: scale(1); filter: brightness(1); } 40% { transform: scale(1.2); filter: brightness(1.2); box-shadow: 0 0 30px var(--accent); } 100% { transform: scale(0); opacity: 0; } }
+        
+        .cn-rule-panel { width: 350px; padding: 25px; background: white; border: 3px solid var(--accent); border-radius: 15px; opacity: 0; transform: translateX(20px); transition: all 0.5s; box-shadow: 0 15px 35px rgba(225, 29, 72, 0.15);}
+        .cn-rule-panel.show { opacity: 1; transform: translateX(0); }
+
+        /* Slide 6: Format Transform */
+        .fmt-container { width: 90%; height: 100%; display: flex; justify-content: space-between; align-items: center; position: relative; padding: 20px;}
+        .fmt-raw-data { width: 40%; height: 100%; background: white; border: 2px dashed #cbd5e1; border-radius: 15px; padding: 30px; font-size: 1.3rem; color: var(--text-main); display: flex; align-items: center; text-align: justify; line-height: 1.8; opacity: 0; transition: all 0.5s; box-shadow: 0 10px 25px rgba(0,0,0,0.05); font-weight: 500; overflow-y: auto; scrollbar-width: none;}
+        .fmt-raw-data.show { opacity: 1; border-style: solid;}
+        .fmt-transformer { width: 15%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; opacity: 0; transition: opacity 0.5s; }
+        .fmt-transformer.show { opacity: 1; }
+        .fmt-arrow { font-size: 4rem; color: var(--whatsapp); animation: pulseRight 1s infinite alternate; }
+        @keyframes pulseRight { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); text-shadow: 0 0 20px rgba(22, 163, 74, 0.4); } }
+        
+        .fmt-result { width: 45%; height: 100%; background: white; border: 3px solid var(--whatsapp); border-radius: 15px; padding: 25px; opacity: 0; transform: scale(0.9); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 40px rgba(22, 163, 74, 0.15); overflow-y: auto; display: flex; flex-direction: column; scrollbar-width: none;}
+        .fmt-result.show { opacity: 1; transform: scale(1); }
+        .fmt-table { width: 100%; border-collapse: collapse; color: var(--text-main); font-size: 1.2rem; }
+        .fmt-table th { background: rgba(22, 163, 74, 0.1); padding: 15px; border: 2px solid #e2e8f0; color: var(--whatsapp); font-weight: 800;}
+        .fmt-table td { padding: 15px; border: 2px solid #e2e8f0; text-align: center; font-weight: 500;}
+
+        /* Slide 7: Iterative Sculptor */
+        .sculpt-container { display: flex; width: 100%; height: 100%; padding: 20px; gap: 30px; align-items: stretch; justify-content: center; }
+        .sculpt-controls { width: 30%; display: flex; flex-direction: column; gap: 20px; justify-content: center;}
+        .sculpt-btn { padding: 20px; border-radius: 15px; border: 2px solid #cbd5e1; background: white; color: var(--text-muted); font-size: 1.3rem; font-weight: 800; text-align: left; opacity: 0; transform: translateX(-20px); transition: all 0.4s; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.02);}
+        .sculpt-btn.show { opacity: 1; transform: translateX(0); }
+        .sculpt-btn.active { color: white; box-shadow: 0 15px 30px rgba(0,0,0,0.1); transform: translateX(15px) scale(1.02); border-color: transparent;}
+        .sculpt-btn.btn-task.active { background: var(--primary); }
+        .sculpt-btn.btn-context.active { background: var(--gold); }
+        .sculpt-btn.btn-constraint.active { background: var(--accent); }
+        .sculpt-btn.btn-format.active { background: var(--whatsapp); }
+        
+        .sculpt-canvas { width: 65%; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.05); position: relative; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 30px; scrollbar-width: none; transition: all 0.5s;}
+        .sculpt-canvas.active-canvas { background: white; border-style: solid; }
+        
+        .sculpt-block { width: 100%; height: 100%; background: white; border: 2px solid #cbd5e1; border-radius: 15px; padding: 35px; color: var(--text-main); font-size: 1.4rem; line-height: 1.8; transition: all 1s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; overflow-y: auto; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.05); font-weight: 500;}
+        .sculpt-block.show { opacity: 1; }
+        .sculpt-block.filtered { background: rgba(217, 119, 6, 0.05); border-color: var(--gold); }
+        .sculpt-block.filtered .text-irrelevant { opacity: 0; filter: blur(5px); transition: all 0.8s; height: 0; display: inline-block; overflow: hidden;}
+        .sculpt-block.filtered .text-relevant { color: var(--gold); font-weight: bold; transition: color 0.8s; }
+        
+        .sculpt-block.condensed { width: 70%; height: 70%; background: rgba(225, 29, 72, 0.05); border-color: var(--accent); font-size: 1.6rem; text-align: center; display: flex; align-items: center; justify-content: center; border-radius: 25px; padding: 40px;}
+        .sculpt-block.condensed .text-relevant { color: var(--accent); font-weight: 800; }
+        .sculpt-block.condensed .text-constrained { display: none; }
+        
+        .sculpt-block.formatted { width: 90%; height: 90%; background: transparent; border: none; padding: 0; box-shadow: none;}
+        
+        .sculpt-ui-card { width: 100%; height: 100%; background: white; border: 3px solid var(--whatsapp); border-radius: 20px; box-shadow: 0 20px 50px rgba(22, 163, 74, 0.15); opacity: 0; position: absolute; top: 0; left: 0; transform: scale(0.8) rotateY(90deg); transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; overflow: hidden; }
+        .sculpt-block.formatted .sculpt-ui-card { opacity: 1; transform: scale(1) rotateY(0); }
+        .sculpt-block.formatted .text-base { display: none; }
+        .ui-header { background: rgba(22, 163, 74, 0.1); color: var(--whatsapp); padding: 20px; font-weight: 900; font-size: 1.6rem; text-align: center; border-bottom: 2px solid rgba(22, 163, 74, 0.2);}
+        .ui-body { padding: 30px; display: flex; flex-direction: column; gap: 20px; flex: 1; justify-content: center; }
+        .ui-row { display: flex; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; color: var(--text-main); font-size: 1.4rem; font-weight: 600;}
+        .ui-label { color: var(--text-muted); font-weight: 800;}
+
+        /* Slide 8: Assembly */
+        .prompt-pillar-container { display: flex; justify-content: space-around; align-items: flex-end; height: 100%; width: 90%; margin: 0 auto; padding-bottom: 20px; }
+        .p-pillar { width: 22%; background: white; border: 2px dashed #cbd5e1; border-radius: 15px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; opacity: 0; transform: translateY(30px); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .p-pillar.show { opacity: 1; transform: translateY(0); box-shadow: 0 15px 35px rgba(0,0,0,0.05); border-style: solid;}
+        .p-icon { font-size: 3rem; margin-bottom: 15px; }
+        .p-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .p-desc { font-size: 1.05rem; color: var(--text-muted); text-align: center; line-height: 1.4; font-weight: 500;}
+        
+        #pillar-task.active-pillar { border-color: var(--primary); background: rgba(14, 165, 233, 0.05); }
+        #pillar-context.active-pillar { border-color: var(--gold); background: rgba(217, 119, 6, 0.05); }
+        #pillar-constraint.active-pillar { border-color: var(--accent); background: rgba(225, 29, 72, 0.05); }
+        #pillar-format.active-pillar { border-color: var(--whatsapp); background: rgba(22, 163, 74, 0.05); }
+        
+        .assembly-belt { position: absolute; bottom: 50px; width: 85%; height: 10px; background: #cbd5e1; border-radius: 5px; left: 50%; transform: translateX(-50%); z-index: 1; }
+        .assembly-packet { position: absolute; width: 50px; height: 50px; background: white; border-radius: 10px; top: -20px; left: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: all 0.8s ease; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; opacity: 0; z-index: 10; font-weight: 800; color: var(--text-main); border: 2px solid #cbd5e1;}
+        
+        .assembly-packet.p-task { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4); width: 70px; }
+        .assembly-packet.p-context { background: linear-gradient(90deg, var(--primary) 50%, var(--gold) 50%); color: white; border-color: transparent; box-shadow: 0 10px 25px rgba(217, 119, 6, 0.4); width: 120px; }
+        .assembly-packet.p-constraint { background: linear-gradient(90deg, var(--primary) 33%, var(--gold) 33%, var(--gold) 66%, var(--accent) 66%); color: white; border-color: transparent; box-shadow: 0 10px 25px rgba(225, 29, 72, 0.4); width: 150px; border-radius: 25px; }
+        .assembly-packet.p-format { background: linear-gradient(90deg, var(--primary) 25%, var(--gold) 25%, var(--gold) 50%, var(--accent) 50%, var(--accent) 75%, var(--whatsapp) 75%); color: white; border: 3px solid white; box-shadow: 0 15px 35px rgba(22, 163, 74, 0.5); width: 180px; border-radius: 8px; }
+        
+        .laser-cutter { position: absolute; width: 4px; height: 120px; background: var(--accent); top: -130px; left: 50%; box-shadow: 0 0 20px var(--accent); transform: scaleY(0); transform-origin: top; transition: all 0.3s; border-radius: 2px;}
+        .laser-cutter.cut { transform: scaleY(1); }
+        
+        .format-stamper { position: absolute; width: 80px; height: 80px; border: 5px solid var(--whatsapp); border-radius: 16px; top: -140px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; font-size: 3rem; color: var(--whatsapp); opacity: 0; transition: all 0.3s; font-weight: bold; background: white;}
+        .format-stamper.stamp { top: -30px; opacity: 1; box-shadow: 0 15px 30px rgba(22, 163, 74, 0.3); z-index: 20; }
+
+        /* Slide 9: The Sculptor Analogy */
+        .sculptor-wrapper { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; position: relative; }
+        .sculptor-man { position: absolute; left: 5%; bottom: 10%; font-size: 6rem; transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1); opacity: 0; transform: translateX(-50px); z-index: 10; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));}
+        .sculptor-man.walk-in { opacity: 1; transform: translateX(180px); }
+        .sculptor-man.chisel-pos { transform: translateX(300px) translateY(-60px); }
+        
+        .the-stone-base { width: 300px; height: 400px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; }
+        
+        .stone-rock { width: 100%; height: 100%; background: #64748b; border-radius: 20% 30% 10% 40%; box-shadow: inset -20px -20px 40px rgba(0,0,0,0.3), inset 20px 20px 40px rgba(255,255,255,0.4), 0 20px 40px rgba(0,0,0,0.1); transition: all 1s ease-in-out; display: flex; justify-content: center; align-items: center; position: absolute; }
+        .stone-rock.context-cut { width: 80%; height: 80%; border-radius: 10% 20% 5% 15%; }
+        .stone-rock.constraint-cut { width: 50%; height: 70%; border-radius: 5px; }
+        
+        .statue-final { width: 140px; height: 260px; background: linear-gradient(135deg, #fde68a, #d97706); border-radius: 50% 50% 10% 10% / 30% 30% 10% 10%; box-shadow: 0 15px 40px rgba(217, 119, 6, 0.4), inset -10px -10px 25px rgba(180, 83, 9, 0.3); opacity: 0; transform: scale(0.5); transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: center; align-items: center; font-size: 6rem; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.2); position: absolute; z-index: 5; }
+        .stone-rock.statue-mode { opacity: 0; transform: scale(0); }
+        .statue-final.show { opacity: 1; transform: scale(1); }
+
+        .chisel-sparks { position: absolute; width: 400px; height: 400px; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 20; opacity: 0; background: radial-gradient(circle, rgba(217, 119, 6, 0.4) 0%, transparent 60%); }
+        .chisel-sparks.active { animation: sparkFlash 0.3s infinite alternate; opacity: 1; }
+        @keyframes sparkFlash { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; } }
+
+        /* RESPONSIVE SETTINGS */
+        @media (max-width: 950px) {
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 1.5rem; }
+            .landscape-box { min-height: 350px; height: auto; flex-direction: column !important; }
+            .desc-box { font-size: 1.1rem; padding: 15px; }
+            
+            .context-split { flex-direction: column; gap: 15px; padding: 10px; }
+            .context-zone { width: 100%; min-height: 250px; padding: 15px; }
+            .cz-title { font-size: 1.2rem; margin-bottom: 15px; padding: 6px 15px; }
+            .chat-msg { font-size: 1rem; padding: 12px; }
+            
+            .cn-filter-box { width: 100%; height: 200px; }
+            .cn-rule-panel { width: 95%; padding: 15px; margin-top: 10px; font-size: 1rem;}
+            .cn-word { font-size: 1rem; padding: 6px 12px; }
+            
+            .fmt-container { flex-direction: column; height: 100%; justify-content: flex-start; gap: 15px; padding-top: 15px;}
+            .fmt-raw-data { width: 95%; height: auto; min-height: 150px; font-size: 1rem; padding: 15px; }
+            .fmt-transformer { width: 100%; flex-direction: row; }
+            .fmt-arrow { transform: rotate(90deg); animation: pulseDown 1s infinite alternate; font-size: 2.5rem;}
+            @keyframes pulseDown { 0% { transform: rotate(90deg) translateX(-5px); } 100% { transform: rotate(90deg) translateX(5px); text-shadow: 0 0 15px var(--whatsapp); } }
+            .fmt-result { width: 95%; height: auto; min-height: 200px; padding: 15px; }
+            .fmt-table { font-size: 0.9rem; }
+            .fmt-table th, .fmt-table td { padding: 8px; }
+
+            .sculpt-container { flex-direction: column; padding: 10px; gap: 15px; }
+            .sculpt-controls { width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+            .sculpt-btn { padding: 10px; font-size: 1rem; width: 48%; margin-bottom: 5px; transform: translateY(-10px); }
+            .sculpt-btn.active { transform: translateY(0) scale(1.02); }
+            .sculpt-canvas { width: 100%; height: 250px; padding: 15px; }
+            .sculpt-block { font-size: 0.95rem; padding: 15px; }
+            .sculpt-block.condensed { font-size: 1.1rem; width: 95%; height: 85%; padding: 20px;}
+            .ui-header { font-size: 1.2rem; padding: 10px; }
+            .ui-row { font-size: 1rem; padding-bottom: 10px;}
+
+            .p-pillar { padding: 15px; height: 180px; width: 45%; margin-bottom: 10px;}
+            .p-title { font-size: 1.1rem; }
+            .p-desc { font-size: 0.9rem; }
+            .p-icon { font-size: 2rem; width: 60px; height: 60px; margin-bottom: 10px;}
+            .assembly-packet { font-size: 1rem; width: 40px; height: 40px;}
+            
+            .sculptor-man.walk-in { transform: translateX(60px); font-size: 4rem; }
+            .sculptor-man.chisel-pos { transform: translateX(120px) translateY(-30px); font-size: 4rem;}
+            .the-stone-base { width: 180px; height: 250px; }
+            .statue-final { width: 90px; height: 160px; font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation" onclick="nextSlide()">
+        
+        <!-- SLIDE 0: TITLE SLIDE -->
+        <section class="slide active" id="slide-0" style="align-items: center; text-align: center; justify-content: center;">
+            <div style="max-width: 1050px; width: 100%;">
+                <h2 style="color: var(--accent); font-size: 1.6rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">Foundation Diploma in ICT</h2>
+                <h1 style="font-size: 4.5rem; margin-bottom: 5px; color: var(--primary);">Module 05</h1>
+                <p style="font-size: 2.4rem; color: var(--text-main); font-weight: 800; margin-bottom: 30px; letter-spacing: -0.5px;">Prompt Engineering & Working with AI</p>
+
+                <div id="module-list" style="background: white; border: 1px solid #cbd5e1; border-radius: 20px; padding: 25px 35px; text-align: left; margin-bottom: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05);">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <!-- HIGHLIGHTED 5.1 -->
+                        <li style="font-size: 1.5rem; margin-bottom: 12px; color: var(--text-main); display: flex; align-items: center; gap: 18px; background: rgba(14, 165, 233, 0.05); padding: 12px 15px; border-radius: 12px; border: 2px solid var(--primary); transform: scale(1.02); box-shadow: 0 5px 15px rgba(14, 165, 233, 0.1);"><span style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.2rem; box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);">5.1</span> <b style="color:var(--text-main);">Prompt anatomy: task, context, constraints and format</b></li>
+                        
+                        <li style="font-size: 1.35rem; margin-bottom: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 18px;"><span style="background: #f1f5f9; color: var(--text-muted); padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; border: 1px solid #e2e8f0;">5.2</span> Role prompting, examples and iterative refinement</li>
+                        <li style="font-size: 1.35rem; margin-bottom: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 18px;"><span style="background: #f1f5f9; color: var(--text-muted); padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; border: 1px solid #e2e8f0;">5.3</span> Comparing weak vs strong prompts</li>
+                        <li style="font-size: 1.35rem; margin-bottom: 0; color: var(--text-muted); display: flex; align-items: center; gap: 18px;"><span style="background: #f1f5f9; color: var(--text-muted); padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; border: 1px solid #e2e8f0;">5.4</span> Prompt libraries, verification and safe data handling</li>
+                    </ul>
+                </div>
+
+                <div id="profile-box" style="display: inline-flex; align-items: center; justify-content: center; gap: 25px; background: white; padding: 18px 40px; border-radius: 20px; border-left: 6px solid var(--primary); text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.05); position: relative;">
+                    <div style="width: 85px; height: 85px; border-radius: 15px; border: 3px solid var(--primary); flex-shrink: 0; background-color: #f1f5f9; background-image: url('./image_8ca44b.png'); background-size: cover; background-position: center; box-shadow: 0 5px 15px rgba(14, 165, 233, 0.2);"></div>
+                    <div>
+                        <p style="font-size: 0.95rem; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">Lecturer</p>
+                        <h3 style="font-size: 1.8rem; color: var(--text-main); margin-bottom: 5px; font-weight: 800;">Himanka Dodangoda</h3>
+                        <p style="font-size: 1.15rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500;">MSc in AI (Reading) | MBA | BSc (Hons) in Software Eng. (UK)</p>
+                        <p style="font-size: 0.95rem; color: var(--gold); margin-bottom: 0; font-weight: 700;">SLQF 10 | SCQF 7, 8, 9</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 1: What is a Prompt? -->
+        <section class="slide" id="slide-1">
+            <div class="module-tag" style="background:rgba(126, 34, 206, 0.1); border-color: var(--purple); color: var(--purple);">5.1 INTRODUCTION</div>
+            <h1 style="color: var(--purple);">What is a Prompt?</h1>
+            <h2 style="color: var(--text-main);">The bridge between human intent and AI execution.</h2>
+            
+            <div class="landscape-box ai-landscape">
+                <svg class="bg-curve" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M 20 50 C 40 50, 60 50, 80 50" stroke="#cbd5e1" stroke-width="3" stroke-dasharray="10,10" fill="none"></path>
+                </svg>
+
+                <div class="data-packet google" id="prompt-pkt-req"><span>💬</span> Suggest a laptop</div>
+                <div class="data-packet whatsapp" id="prompt-pkt-res" style="display:none;"><span>💡</span> MacBook Air M3</div>
+
+                <div class="net-node" id="prompt-node-user" style="top: 50%; left: 20%;">
+                    <div class="icon-circle">👤</div><div class="node-label">Human (You)</div>
+                </div>
+                
+                <div class="net-node ai-brain-node" id="prompt-node-ai" style="top: 50%; left: 80%;">
+                    <div class="chat-bubble" id="ai-processing-bubble">Processing <span class="gear-spin">⚙️</span></div>
+                    <div class="icon-circle">🧠</div><div class="node-label">Generative AI</div>
+                </div>
+            </div>
+            <div class="desc-box" id="prompt-desc" style="border-left-color: var(--purple);">Click to send your first instruction...</div>
+        </section>
+
+        <!-- SLIDE 2: Task & Context -->
+        <section class="slide" id="slide-2">
+            <div class="module-tag" style="background:rgba(14, 165, 233, 0.1); border-color: var(--primary); color: var(--primary);">PROMPT ANATOMY: PART 1</div>
+            <h1 style="color: var(--primary);">Task & Context</h1>
+            <h2 style="color: var(--text-main);">Defining WHAT to do and WHY you need it.</h2>
+            
+            <div class="comparison-layout">
+                <div class="info-card" id="card-task" style="border-top: 5px solid var(--primary); transform: none; opacity: 0.3; filter: grayscale(1); transition: all 0.5s;">
+                    <div class="card-header">
+                        <div class="card-icon" style="color: var(--primary);">🎯</div>
+                        <div class="card-title-box"><h3 style="color: var(--primary);">The Task</h3><span>The Action Verb</span></div>
+                    </div>
+                    <p style="font-size: 1.25rem; line-height: 1.7; font-weight: 500;">What exactly do you want the AI to do? Always start with a strong action verb.</p>
+                    <div class="code-snippet" id="cs-task">
+                        <span style="color:#94a3b8;">// Weak:</span> "about computers"<br><br>
+                        <span style="color:#94a3b8;">// Strong:</span> <span class="hl-task">"Explain</span> how a computer CPU works."
+                    </div>
+                </div>
+
+                <div class="info-card" id="card-context" style="border-top: 5px solid var(--gold); transform: none; opacity: 0.3; filter: grayscale(1); transition: all 0.5s;">
+                    <div class="card-header">
+                        <div class="card-icon" style="color: var(--gold);">📖</div>
+                        <div class="card-title-box"><h3 style="color: var(--gold);">The Context</h3><span>The Background Info</span></div>
+                    </div>
+                    <p style="font-size: 1.25rem; line-height: 1.7; font-weight: 500;">Why are you asking? Who is this for? Giving background helps AI tailor the answer.</p>
+                    <div class="code-snippet" id="cs-context">
+                        <span class="hl-task">"Explain</span> how a computer CPU works <span class="hl-context">to a 10-year-old child who loves LEGO."</span>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-box" id="tc-desc" style="border-left-color: var(--primary);">Click to define the Task...</div>
+        </section>
+
+        <!-- SLIDE 3: Constraints & Format -->
+        <section class="slide" id="slide-3">
+            <div class="module-tag" style="background:rgba(225, 29, 72, 0.1); border-color: var(--accent); color: var(--accent);">PROMPT ANATOMY: PART 2</div>
+            <h1 style="color: var(--accent);">Constraints & Format</h1>
+            <h2 style="color: var(--text-main);">Setting boundaries and shaping the final output.</h2>
+            
+            <div class="comparison-layout">
+                <div class="info-card" id="card-constraint" style="border-top: 5px solid var(--accent); transform: none; opacity: 0.3; filter: grayscale(1); transition: all 0.5s;">
+                    <div class="card-header">
+                        <div class="card-icon" style="color: var(--accent);">🚧</div>
+                        <div class="card-title-box"><h3 style="color: var(--accent);">Constraints</h3><span>The Rules</span></div>
+                    </div>
+                    <p style="font-size: 1.25rem; line-height: 1.7; font-weight: 500;">What should the AI AVOID? What are the limits? (Word count, tone, language).</p>
+                    <div class="code-snippet" id="cs-constraint">
+                        ... <span class="hl-constraint">Use under 50 words. Do not use complex technical jargon.</span>
+                    </div>
+                </div>
+
+                <div class="info-card" id="card-format" style="border-top: 5px solid var(--whatsapp); transform: none; opacity: 0.3; filter: grayscale(1); transition: all 0.5s;">
+                    <div class="card-header">
+                        <div class="card-icon" style="color: var(--whatsapp);">📋</div>
+                        <div class="card-title-box"><h3 style="color: var(--whatsapp);">Output Format</h3><span>The Shape</span></div>
+                    </div>
+                    <p style="font-size: 1.25rem; line-height: 1.7; font-weight: 500;">How do you want the final answer delivered? (Table, Email, Code, Bullet points).</p>
+                    <div class="code-snippet" id="cs-format">
+                        ... <span class="hl-format">Provide the answer as a 3-point bulleted list.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-box" id="cf-desc" style="border-left-color: var(--accent);">Click to set Constraints...</div>
+        </section>
+
+        <!-- SLIDE 4: Weak vs Strong Context Simulation -->
+        <section class="slide" id="slide-4">
+            <div class="module-tag" style="background:rgba(217, 119, 6, 0.1); border-color: var(--gold); color: var(--gold);">5.3 COMPARING PROMPTS</div>
+            <h1 style="color: var(--gold);">The Power of Context</h1>
+            <h2 style="color: var(--text-main);">See how the AI responds to Weak vs. Strong Prompts.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--gold);">
+                <div class="context-split">
+                    <!-- Weak Side -->
+                    <div class="context-zone cz-weak" id="cz-weak">
+                        <div class="cz-title">⚠️ Without Context (Weak)</div>
+                        <div class="chat-ui">
+                            <div class="chat-msg msg-user" id="w-msg-1">Write an email asking for a day off.</div>
+                            <div class="typing-indicator" id="w-typing"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>
+                            <div class="chat-msg msg-ai bad-resp" id="w-msg-2">
+                                "Hey boss, <br><br>I am not coming to work tomorrow because I need a day off. See you later."
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strong Side -->
+                    <div class="context-zone cz-strong" id="cz-strong">
+                        <div class="cz-title">✅ With Context (Strong)</div>
+                        <div class="chat-ui">
+                            <div class="chat-msg msg-user" id="s-msg-1">
+                                <span class="hl-task" style="color:white; border-bottom: 2px solid white;">Write an email to my corporate manager</span> asking for a day off tomorrow <span class="hl-context" style="color:white; border-bottom: 2px solid #fcd34d;">due to a sudden medical checkup. Keep it professional.</span>
+                            </div>
+                            <div class="typing-indicator" id="s-typing"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>
+                            <div class="chat-msg msg-ai good-resp" id="s-msg-2">
+                                "Dear [Manager's Name],<br><br>Please accept this request for a day of leave tomorrow due to an unforeseen medical appointment. I will ensure my pending tasks are covered."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-box" id="vs-desc" style="border-left-color: var(--gold);">Click to see what happens when you give a generic prompt...</div>
+        </section>
+
+        <!-- SLIDE 5: Constraints in Action -->
+        <section class="slide" id="slide-5">
+            <div class="module-tag" style="background:rgba(225, 29, 72, 0.1); border-color: var(--accent); color: var(--accent);">5.1 PROMPT ANATOMY</div>
+            <h1 style="color: var(--accent);">Constraints in Action</h1>
+            <h2 style="color: var(--text-main);">Applying negative prompts to block unwanted output.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--accent); display: flex; align-items: center; justify-content: space-evenly; flex-direction: row; background: white;">
+                
+                <div class="cn-rule-panel" id="cn-rule">
+                    <h3 style="color: var(--accent); margin-bottom: 15px; font-size: 1.6rem; font-weight: 800;">Constraint Active:</h3>
+                    <p style="color: var(--text-main); font-size: 1.3rem; line-height: 1.6; margin: 0; font-weight: 500;">"Explain the solar system. <br><br><b style="color:var(--accent);">Do NOT use complex physics terms or jargon. Keep it simple.</b>"</p>
+                </div>
+
+                <div class="cn-filter-box">
+                    <div class="cn-filter-line" id="cn-laser"></div>
+                    <!-- Words generated by AI -->
+                    <div class="cn-word" id="cnw-1" style="top: 20%; left: 30%;">Planets</div>
+                    <div class="cn-word" id="cnw-2" style="top: 40%; left: 10%;">Sun</div>
+                    <div class="cn-word" id="cnw-3" style="top: 60%; left: 60%;">Orbit</div>
+                    <div class="cn-word" id="cnw-4" style="top: 15%; left: 55%;">Gravity</div>
+                    
+                    <!-- Unwanted Jargon Words -->
+                    <div class="cn-word" id="cnw-bad-1" style="top: 75%; left: 20%;">Thermodynamics</div>
+                    <div class="cn-word" id="cnw-bad-2" style="top: 35%; left: 40%;">Gravitational Singularity</div>
+                    <div class="cn-word" id="cnw-bad-3" style="top: 80%; left: 50%;">Quantum Mechanics</div>
+                </div>
+
+            </div>
+            <div class="desc-box" id="cn-desc" style="border-left-color: var(--accent);">Click to see the AI generate words...</div>
+        </section>
+
+        <!-- SLIDE 6: Output Format Transformation -->
+        <section class="slide" id="slide-6">
+            <div class="module-tag" style="background:rgba(22, 163, 74, 0.1); border-color: var(--whatsapp); color: var(--whatsapp);">5.1 PROMPT ANATOMY</div>
+            <h1 style="color: var(--whatsapp);">Formatting the Output</h1>
+            <h2 style="color: var(--text-main);">Molding raw data into a structured shape.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--whatsapp); display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+                <div class="fmt-container">
+                    <!-- Raw Data -->
+                    <div class="fmt-raw-data" id="fmt-raw">
+                        "The iPhone 15 Pro costs $999 and has an A17 Pro chip. The Samsung S24 Ultra costs $1299 and has a Snapdragon 8 Gen 3 chip. The Pixel 8 Pro costs $899 and uses the Tensor G3."
+                    </div>
+                    <!-- Transformer Arrow -->
+                    <div class="fmt-transformer" id="fmt-trans">
+                        <div style="color:var(--text-main); font-weight:800; font-size:1.2rem; text-align:center;">"Format as<br>a Table"</div>
+                        <div class="fmt-arrow">➔</div>
+                    </div>
+                    <!-- Formatted Result -->
+                    <div class="fmt-result" id="fmt-res">
+                        <table class="fmt-table">
+                            <tr><th>Phone Model</th><th>Processor Chip</th><th>Price</th></tr>
+                            <tr><td>iPhone 15 Pro</td><td>A17 Pro</td><td style="font-weight: bold; color: var(--text-main);">$999</td></tr>
+                            <tr><td>Samsung S24 Ultra</td><td>Snapdragon 8 Gen 3</td><td style="font-weight: bold; color: var(--text-main);">$1299</td></tr>
+                            <tr><td>Google Pixel 8 Pro</td><td>Tensor G3</td><td style="font-weight: bold; color: var(--text-main);">$899</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-box" id="fmt-desc" style="border-left-color: var(--whatsapp);">Click to see the AI's default raw paragraph output...</div>
+        </section>
+
+        <!-- SLIDE 7: The Prompt Sculptor (Iterative Refinement) -->
+        <section class="slide" id="slide-7">
+            <div class="module-tag" style="background:rgba(8, 145, 178, 0.1); border-color: var(--cyan); color: var(--cyan);">5.2 ITERATIVE REFINEMENT</div>
+            <h1 style="color: var(--cyan);">The Prompt Sculptor</h1>
+            <h2 style="color: var(--text-main);">See how adding layers transforms the AI's output live.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--cyan); background: white;">
+                
+                <div class="sculpt-container">
+                    
+                    <div class="sculpt-controls">
+                        <div class="sculpt-btn btn-task" id="sb-1">🎯 1. Add Task</div>
+                        <div class="sculpt-btn btn-context" id="sb-2">📖 2. Inject Context</div>
+                        <div class="sculpt-btn btn-constraint" id="sb-3">🚧 3. Apply Constraint</div>
+                        <div class="sculpt-btn btn-format" id="sb-4">📋 4. Morph Format</div>
+                    </div>
+
+                    <div class="sculpt-canvas" id="s-canv">
+                        <div class="sculpt-block" id="s-block">
+                            <span class="text-base text-constrained">"Here is a list of fitness routines you can do. You can run, you can swim, or you can lift weights. <br><br></span>
+                            <span class="text-irrelevant text-base text-constrained">For athletes, you should focus on heavy deadlifts and marathons. For young people, gymnastics is great. <br><br></span>
+                            <span class="text-relevant">For seniors over 60 with joint pain, water aerobics and light yoga are highly recommended to avoid stress on the knees."</span>
+                        </div>
+
+                        <div class="sculpt-ui-card" id="s-ui-card">
+                            <div class="ui-header">Senior Fitness Guide</div>
+                            <div class="ui-body">
+                                <div class="ui-row"><span class="ui-label">Condition:</span> <span style="font-weight: 800;">Over 60, Joint Pain</span></div>
+                                <div class="ui-row"><span class="ui-label">Best Exercise 1:</span> <span style="font-weight: 800;">Water Aerobics</span></div>
+                                <div class="ui-row"><span class="ui-label">Best Exercise 2:</span> <span style="font-weight: 800;">Light Yoga</span></div>
+                                <div class="ui-row" style="border-bottom:none; color:var(--accent); font-size:1.1rem; font-style: italic;">* Avoids stress on knees</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="desc-box" id="sculpt-desc" style="border-left-color: var(--cyan);">Click to give the basic task...</div>
+        </section>
+
+        <!-- SLIDE 8: Assembly Pipeline (Final Recap) -->
+        <section class="slide" id="slide-8">
+            <div class="module-tag" style="background:rgba(126, 34, 206, 0.1); border-color: var(--purple); color: var(--purple);">5.1 PROMPT ANATOMY</div>
+            <h1 style="color: var(--purple);">The Perfect Prompt Pipeline</h1>
+            <h2 style="color: var(--text-main);">Combining all elements for maximum AI performance.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--purple); display: flex; align-items: center; justify-content: center; flex-direction: column; background: #f8fafc;">
+                <div class="prompt-pillar-container">
+                    <div class="assembly-belt"><div class="assembly-packet" id="asm-packet"></div></div>
+                    
+                    <div class="p-pillar" id="pillar-task">
+                        <div class="p-icon" style="color:var(--primary);">🎯</div>
+                        <div class="p-title" style="color:var(--primary);">1. Task</div>
+                        <div class="p-desc">"Write a meal plan"</div>
+                    </div>
+                    
+                    <div class="p-pillar" id="pillar-context">
+                        <div class="p-icon" style="color:var(--gold);">📖</div>
+                        <div class="p-title" style="color:var(--gold);">2. Context</div>
+                        <div class="p-desc">"For a diabetic person"</div>
+                    </div>
+                    
+                    <div class="p-pillar" id="pillar-constraint">
+                        <div class="p-icon" style="color:var(--accent);">🚧</div>
+                        <div class="p-title" style="color:var(--accent);">3. Constraint</div>
+                        <div class="p-desc">"No sugar, max 1500 kcal"</div>
+                        <div class="laser-cutter" id="asm-laser"></div>
+                    </div>
+                    
+                    <div class="p-pillar" id="pillar-format">
+                        <div class="p-icon" style="color:var(--whatsapp);">📋</div>
+                        <div class="p-title" style="color:var(--whatsapp);">4. Format</div>
+                        <div class="p-desc">"In a 7-day Table"</div>
+                        <div class="format-stamper" id="asm-stamp">📊</div>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-box" id="asm-desc" style="border-left-color: var(--purple);">Click to see the final pipeline run...</div>
+        </section>
+
+        <!-- NEW SLIDE 9: The Sculptor Analogy (Grand Finale) -->
+        <section class="slide" id="slide-9">
+            <div class="module-tag" style="background:rgba(217, 119, 6, 0.1); border-color: var(--gold); color: var(--gold);">MODULE 5.1 SUMMARY</div>
+            <h1 style="color: var(--gold);">The Sculptor Analogy</h1>
+            <h2 style="color: var(--text-main);">AI is the rock. Your prompt is the chisel.</h2>
+            
+            <div class="landscape-box" style="border-color: var(--gold); background: #f8fafc;">
+                <div class="sculptor-wrapper">
+                    
+                    <div class="sculptor-man" id="s-man">👨🏽‍🎨</div>
+                    
+                    <div class="the-stone-base">
+                        <div class="stone-rock" id="s-rock"></div>
+                        <div class="chisel-sparks" id="s-chisel-efx"></div>
+                        <div class="statue-final" id="s-statue">🏛️</div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="desc-box" id="anl-desc" style="border-left-color: var(--gold);">Click to see the analogy...</div>
+        </section>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        let isAnimating = false;
+        const sleepGlobal = ms => new Promise(r => setTimeout(r, ms));
+
+        // DATA ARRAYS
+        let promptIntroStep = -1;
+        const promptIntroData = [
+            { txt: "<b style='color:var(--primary);'>1. The Need:</b> You have a problem or need information. You type a 'Prompt' (an instruction) in natural language." },
+            { txt: "<b style='color:var(--primary);'>2. Transmission:</b> The prompt is sent to the Large Language Model (LLM)." },
+            { txt: "<b style='color:var(--purple);'>3. Processing:</b> The AI Brain breaks down your words, understands the context, and generates a mathematical prediction of words." },
+            { txt: "<b style='color:var(--whatsapp);'>4. The Output:</b> The AI delivers the generated answer back to you. <br><i style='color:var(--text-main)'>Rule: Better Prompts = Better Outputs!</i>" }
+        ];
+
+        let tcStep = -1;
+        const tcData = [
+            { txt: "<b style='color:var(--primary);'>Step 1: The Task.</b> Always give a direct command. Use words like <i>Summarize, Translate, Write, Code,</i> or <i>Explain.</i>" },
+            { txt: "<b style='color:var(--gold);'>Step 2: The Context.</b> AI doesn't know who you are. Tell it the background. Are you a student? A CEO? What is the goal?" }
+        ];
+
+        let cfStep = -1;
+        const cfData = [
+            { txt: "<b style='color:var(--accent);'>Step 3: Constraints.</b> Act as a director. Tell the AI what it is NOT allowed to do. Set limits on length and tone." },
+            { txt: "<b style='color:var(--whatsapp);'>Step 4: Output Format.</b> Don't just accept plain text. Command the AI to format it as a <i>Table, HTML code, JSON,</i> or <i>Bullet points.</i>" }
+        ];
+
+        let vsStep = -1;
+        const vsData = [
+            { txt: "<b style='color:var(--accent);'>Weak Prompt:</b> You only provided the task. The AI has to guess the context. The result is generic, informal, and likely useless for a corporate job." },
+            { txt: "<b style='color:var(--whatsapp);'>Strong Prompt:</b> By adding the context (Corporate Manager, Medical Checkup) and constraints (Keep it professional), the AI generates a perfect, ready-to-use email." }
+        ];
+
+        let cnStep = -1;
+        const cnData = [
+            { txt: "<b style='color:var(--primary);'>Raw Generation:</b> The AI naturally pulls all related words from its database. Some words are highly technical and complex." },
+            { txt: "<b style='color:var(--accent);'>Constraint Applied:</b> The negative prompt acts as a firewall. The AI evaluates every word. <span style='color:var(--accent);'>Jargon is detected and instantly vaporized.</span>" },
+            { txt: "<b style='color:var(--whatsapp);'>Safe Output:</b> Only the simple, safe words are allowed to pass through to the final answer. You have successfully controlled the AI!" }
+        ];
+
+        let fmtStep = -1;
+        const fmtData = [
+            { txt: "<b style='color:var(--primary);'>Default Output:</b> Without formatting instructions, the AI returns a dense, unorganized paragraph that is hard to read." },
+            { txt: "<b style='color:var(--whatsapp);'>Formatted Output:</b> By simply adding <i>'Format as a table'</i>, the exact same data is structured beautifully, saving you time and effort!" }
+        ];
+
+        let sculptStep = -1;
+        const sculptData = [
+            { txt: "<b style='color:var(--primary);'>1. Raw Output (Task only):</b> The AI dumps a generic, messy block of text covering everything about fitness." },
+            { txt: "<b style='color:var(--gold);'>2. Context Filter Applied:</b> You add 'For a 60-year-old with joint pain'. The AI filters out the irrelevant noise. It's now focused." },
+            { txt: "<b style='color:var(--accent);'>3. Constraint Applied:</b> You add 'Keep it under 20 words'. The AI cuts the fluff and condenses the text down to the core message." },
+            { txt: "<b style='color:var(--whatsapp);'>4. Format Mold Applied:</b> You add 'Format as a UI widget'. The text physically transforms into a beautiful, structured output!" }
+        ];
+
+        let asmStep = -1;
+        const asmData = [
+            { txt: "<b style='color:var(--primary);'>1. Task Applied:</b> Raw instruction injected. The AI knows <i>what</i> to do." },
+            { txt: "<b style='color:var(--gold);'>2. Context Added:</b> Background knowledge attached. The prompt is tailored." },
+            { txt: "<b style='color:var(--accent);'>3. Constraints Enforced:</b> Unwanted elements are trimmed away." },
+            { txt: "<b style='color:var(--whatsapp);'>4. Format Molded:</b> The final output is structured perfectly. <br><b style='color:var(--text-main);'>Result: A Master-Level Prompt!</b>" }
+        ];
+
+        // NEW: Analogy Data
+        let anlStep = -1;
+        const anlData = [
+            { txt: "<b style='color:var(--primary);'>1. The AI is the Rock (Task):</b> When you start, you just have a massive, unshaped block of raw intelligence. You are the human ready to shape it." },
+            { txt: "<b style='color:var(--gold);'>2. The Vision (Context):</b> You must know exactly what you want to build. Context breaks off the massive irrelevant chunks." },
+            { txt: "<b style='color:var(--accent);'>3. The Chisel (Constraints):</b> You use constraints to cut away everything that is NOT the statue. Negative prompts remove the noise with precision." },
+            { txt: "<b style='color:var(--whatsapp);'>4. The Masterpiece (Format):</b> After careful shaping, the AI delivers the perfect, polished result. <br><b>You are the Prompt Sculptor!</b>" }
+        ];
+
+        // SLIDE MANAGER
+        function updateSlides() {
+            slides.forEach((slide, index) => { 
+                if (index === currentSlide) slide.classList.add('active'); 
+                else slide.classList.remove('active'); 
+            });
+
+            // RESETS
+            if (currentSlide === 1) { 
+                promptIntroStep = -1; isAnimating = false; 
+                document.getElementById('prompt-pkt-req').style.display = 'none'; 
+                document.getElementById('prompt-pkt-req').classList.remove('absorbed');
+                document.getElementById('prompt-pkt-res').style.display = 'none'; 
+                document.getElementById('prompt-pkt-res').classList.remove('absorbed');
+                document.getElementById('prompt-node-ai').classList.remove('processing'); 
+                document.getElementById('ai-processing-bubble').style.opacity = '0';
+                document.querySelectorAll('.net-node').forEach(n => n.classList.remove('active-node'));
+                document.getElementById('prompt-desc').innerHTML = "Click to send your first instruction..."; 
+            }
+            
+            if (currentSlide === 2) { 
+                tcStep = -1; isAnimating = false; 
+                document.getElementById('cs-task').classList.remove('show'); 
+                document.getElementById('cs-context').classList.remove('show'); 
+                document.getElementById('card-task').style.opacity = '0.3';
+                document.getElementById('card-task').style.filter = 'grayscale(1)';
+                document.getElementById('card-context').style.opacity = '0.3'; 
+                document.getElementById('card-context').style.filter = 'grayscale(1)'; 
+                document.getElementById('tc-desc').innerHTML = "Click to define the Task..."; 
+            }
+            
+            if (currentSlide === 3) { 
+                cfStep = -1; isAnimating = false; 
+                document.getElementById('cs-constraint').classList.remove('show'); 
+                document.getElementById('cs-format').classList.remove('show'); 
+                document.getElementById('card-constraint').style.opacity = '0.3';
+                document.getElementById('card-constraint').style.filter = 'grayscale(1)';
+                document.getElementById('card-format').style.opacity = '0.3'; 
+                document.getElementById('card-format').style.filter = 'grayscale(1)'; 
+                document.getElementById('cf-desc').innerHTML = "Click to set Constraints..."; 
+            }
+
+            if (currentSlide === 4) { 
+                vsStep = -1; isAnimating = false; 
+                document.getElementById('cz-weak').classList.remove('active-zone');
+                document.getElementById('cz-strong').classList.remove('active-zone');
+                document.getElementById('w-msg-1').classList.remove('show');
+                document.getElementById('w-msg-2').classList.remove('show');
+                document.getElementById('s-msg-1').classList.remove('show');
+                document.getElementById('s-msg-2').classList.remove('show');
+                document.getElementById('w-typing').classList.remove('show');
+                document.getElementById('s-typing').classList.remove('show');
+                document.getElementById('vs-desc').innerHTML = "Click to see what happens when you give a generic prompt..."; 
+            }
+
+            if (currentSlide === 5) {
+                cnStep = -1; isAnimating = false;
+                document.getElementById('cn-rule').classList.remove('show');
+                document.getElementById('cn-laser').classList.remove('active');
+                document.querySelectorAll('.cn-word').forEach(w => {
+                    w.classList.remove('show', 'rejected', 'passed');
+                });
+                document.getElementById('cn-desc').innerHTML = "Click to see the AI generate words...";
+            }
+
+            if (currentSlide === 6) {
+                fmtStep = -1; isAnimating = false;
+                document.getElementById('fmt-raw').classList.remove('show');
+                document.getElementById('fmt-trans').classList.remove('show');
+                document.getElementById('fmt-res').classList.remove('show');
+                document.getElementById('fmt-desc').innerHTML = "Click to see the AI's default raw paragraph output...";
+            }
+
+            if (currentSlide === 7) {
+                sculptStep = -1; isAnimating = false;
+                document.getElementById('sb-1').classList.remove('show', 'active');
+                document.getElementById('sb-2').classList.remove('show', 'active');
+                document.getElementById('sb-3').classList.remove('show', 'active');
+                document.getElementById('sb-4').classList.remove('show', 'active');
+                const block = document.getElementById('s-block');
+                block.classList.remove('show', 'filtered', 'condensed', 'formatted');
+                document.getElementById('s-canv').classList.remove('active-canvas');
+                document.getElementById('sculpt-desc').innerHTML = "Click to give the basic task...";
+            }
+            
+            if (currentSlide === 8) { 
+                asmStep = -1; isAnimating = false; 
+                document.querySelectorAll('.p-pillar').forEach(p => p.classList.remove('active-pillar', 'show')); 
+                document.getElementById('asm-packet').style.opacity = 0; 
+                document.getElementById('asm-packet').className = 'assembly-packet'; 
+                document.getElementById('asm-packet').style.left = '0'; 
+                document.getElementById('asm-laser').classList.remove('cut'); 
+                document.getElementById('asm-stamp').classList.remove('stamp'); 
+                document.getElementById('asm-desc').innerHTML = "Click to start building the prompt..."; 
+            }
+
+            if (currentSlide === 9) {
+                anlStep = -1; isAnimating = false;
+                document.getElementById('s-man').classList.remove('walk-in', 'chisel-pos');
+                document.getElementById('s-rock').className = 'stone-rock';
+                document.getElementById('s-statue').classList.remove('show');
+                document.getElementById('s-chisel-efx').classList.remove('active');
+                document.getElementById('anl-desc').innerHTML = "Click to see the analogy...";
+            }
+        }
+
+        // ANIMATION FUNCTIONS
+        async function runPromptIntroStep() { 
+            if (isAnimating) return; isAnimating = true; promptIntroStep++; 
+            const desc = document.getElementById('prompt-desc'); 
+            const pReq = document.getElementById('prompt-pkt-req');
+            const pRes = document.getElementById('prompt-pkt-res');
+            const aiNode = document.getElementById('prompt-node-ai');
+            const aiBubble = document.getElementById('ai-processing-bubble');
+
+            if (promptIntroStep === 0) { 
+                document.getElementById('prompt-node-user').classList.add('active-node');
+                pReq.classList.remove('absorbed');
+                pReq.style.display = 'flex'; 
+                pReq.style.top = '50%';
+                pReq.style.left = '20%'; 
+            } else if (promptIntroStep === 1) { 
+                pReq.style.left = '80%'; 
+            } else if (promptIntroStep === 2) { 
+                pReq.classList.add('absorbed'); 
+                setTimeout(() => { 
+                    pReq.style.display = 'none'; 
+                    aiNode.classList.add('active-node', 'processing'); 
+                    aiBubble.style.opacity = '1';
+                }, 400); 
+                await sleepGlobal(1200);
+            } else if (promptIntroStep === 3) { 
+                aiNode.classList.remove('processing'); 
+                aiBubble.style.opacity = '0';
+                pRes.classList.add('absorbed');
+                pRes.style.display = 'flex'; 
+                pRes.style.top = '50%';
+                pRes.style.left = '80%'; 
+                setTimeout(() => { pRes.classList.remove('absorbed'); }, 50); 
+                setTimeout(() => { pRes.style.left = '20%'; }, 600); 
+            } 
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = promptIntroData[promptIntroStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runTcStep() { 
+            if (isAnimating) return; isAnimating = true; tcStep++; 
+            const desc = document.getElementById('tc-desc'); 
+            if (tcStep === 0) { 
+                document.getElementById('card-task').style.opacity = '1'; 
+                document.getElementById('card-task').style.filter = 'grayscale(0)'; 
+                setTimeout(() => { document.getElementById('cs-task').classList.add('show'); }, 300);
+            } else if (tcStep === 1) { 
+                document.getElementById('card-context').style.opacity = '1'; 
+                document.getElementById('card-context').style.filter = 'grayscale(0)'; 
+                setTimeout(() => { document.getElementById('cs-context').classList.add('show'); }, 300);
+            } 
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = tcData[tcStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runCfStep() { 
+            if (isAnimating) return; isAnimating = true; cfStep++; 
+            const desc = document.getElementById('cf-desc'); 
+            if (cfStep === 0) { 
+                document.getElementById('card-constraint').style.opacity = '1'; 
+                document.getElementById('card-constraint').style.filter = 'grayscale(0)'; 
+                setTimeout(() => { document.getElementById('cs-constraint').classList.add('show'); }, 300);
+            } else if (cfStep === 1) { 
+                document.getElementById('card-format').style.opacity = '1'; 
+                document.getElementById('card-format').style.filter = 'grayscale(0)'; 
+                setTimeout(() => { document.getElementById('cs-format').classList.add('show'); }, 300);
+            } 
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = cfData[cfStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runVsStep() {
+            if (isAnimating) return; isAnimating = true; vsStep++; 
+            const desc = document.getElementById('vs-desc');
+
+            if (vsStep === 0) {
+                document.getElementById('cz-weak').classList.add('active-zone');
+                document.getElementById('w-msg-1').classList.add('show');
+                await sleepGlobal(600);
+                document.getElementById('w-typing').classList.add('show');
+                await sleepGlobal(1200);
+                document.getElementById('w-typing').classList.remove('show');
+                document.getElementById('w-msg-2').classList.add('show');
+            } else if (vsStep === 1) {
+                document.getElementById('cz-weak').classList.remove('active-zone');
+                document.getElementById('cz-strong').classList.add('active-zone');
+                document.getElementById('s-msg-1').classList.add('show');
+                await sleepGlobal(600);
+                document.getElementById('s-typing').classList.add('show');
+                await sleepGlobal(1500);
+                document.getElementById('s-typing').classList.remove('show');
+                document.getElementById('s-msg-2').classList.add('show');
+            }
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = vsData[vsStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runCnStep() {
+            if (isAnimating) return; isAnimating = true; cnStep++; 
+            const desc = document.getElementById('cn-desc');
+
+            if (cnStep === 0) {
+                document.getElementById('cnw-1').classList.add('show');
+                await sleepGlobal(300);
+                document.getElementById('cnw-bad-1').classList.add('show');
+                await sleepGlobal(200);
+                document.getElementById('cnw-2').classList.add('show');
+                document.getElementById('cnw-bad-2').classList.add('show');
+                await sleepGlobal(300);
+                document.getElementById('cnw-3').classList.add('show');
+                document.getElementById('cnw-4').classList.add('show');
+                document.getElementById('cnw-bad-3').classList.add('show');
+            } else if (cnStep === 1) {
+                document.getElementById('cn-rule').classList.add('show');
+                await sleepGlobal(500);
+                document.getElementById('cn-laser').classList.add('active');
+                await sleepGlobal(600);
+                document.getElementById('cnw-bad-1').classList.add('rejected');
+                await sleepGlobal(200);
+                document.getElementById('cnw-bad-2').classList.add('rejected');
+                await sleepGlobal(300);
+                document.getElementById('cnw-bad-3').classList.add('rejected');
+            } else if (cnStep === 2) {
+                document.getElementById('cn-laser').classList.remove('active');
+                document.getElementById('cnw-1').classList.add('passed');
+                document.getElementById('cnw-2').classList.add('passed');
+                document.getElementById('cnw-3').classList.add('passed');
+                document.getElementById('cnw-4').classList.add('passed');
+            }
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = cnData[cnStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runFmtStep() {
+            if (isAnimating) return; isAnimating = true; fmtStep++; 
+            const desc = document.getElementById('fmt-desc');
+
+            if (fmtStep === 0) {
+                document.getElementById('fmt-raw').classList.add('show');
+            } else if (fmtStep === 1) {
+                document.getElementById('fmt-trans').classList.add('show');
+                await sleepGlobal(800);
+                document.getElementById('fmt-res').classList.add('show');
+            }
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = fmtData[fmtStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runSculptStep() {
+            if (isAnimating) return; isAnimating = true; sculptStep++; 
+            const desc = document.getElementById('sculpt-desc');
+            const block = document.getElementById('s-block');
+
+            if (sculptStep === 0) {
+                document.getElementById('sb-1').classList.add('show', 'active');
+                block.classList.add('show');
+            } else if (sculptStep === 1) {
+                document.getElementById('sb-1').classList.remove('active');
+                document.getElementById('sb-2').classList.add('show', 'active');
+                block.classList.add('filtered');
+            } else if (sculptStep === 2) {
+                document.getElementById('sb-2').classList.remove('active');
+                document.getElementById('sb-3').classList.add('show', 'active');
+                block.classList.add('condensed');
+            } else if (sculptStep === 3) {
+                document.getElementById('sb-3').classList.remove('active');
+                document.getElementById('sb-4').classList.add('show', 'active');
+                document.getElementById('s-canv').classList.add('active-canvas');
+                block.classList.add('formatted');
+            }
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = sculptData[sculptStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runAsmStep() { 
+            if (isAnimating) return; isAnimating = true; asmStep++; 
+            const desc = document.getElementById('asm-desc'); 
+            const pkt = document.getElementById('asm-packet');
+
+            if (asmStep === 0) { 
+                document.getElementById('pillar-task').classList.add('show', 'active-pillar');
+                pkt.style.opacity = 1; pkt.className = 'assembly-packet p-task'; pkt.innerHTML = "T"; pkt.style.left = '12%'; 
+            } else if (asmStep === 1) { 
+                document.getElementById('pillar-context').classList.add('show', 'active-pillar');
+                pkt.className = 'assembly-packet p-context'; pkt.innerHTML = "T + C"; pkt.style.left = '37%'; 
+            } else if (asmStep === 2) { 
+                document.getElementById('pillar-constraint').classList.add('show', 'active-pillar');
+                pkt.style.left = '62%'; 
+                setTimeout(() => { 
+                    document.getElementById('asm-laser').classList.add('cut'); 
+                    pkt.className = 'assembly-packet p-constraint'; pkt.innerHTML = "T+C+C"; 
+                }, 400);
+                setTimeout(() => { document.getElementById('asm-laser').classList.remove('cut'); }, 800);
+            } else if (asmStep === 3) { 
+                document.getElementById('pillar-format').classList.add('show', 'active-pillar');
+                pkt.style.left = '87%'; 
+                setTimeout(() => { document.getElementById('asm-stamp').classList.add('stamp'); }, 400);
+                setTimeout(() => { 
+                    pkt.className = 'assembly-packet p-format'; pkt.innerHTML = "PERFECT"; 
+                    document.getElementById('asm-stamp').classList.remove('stamp'); 
+                }, 600);
+            } 
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = asmData[asmStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        async function runAnlStep() {
+            if (isAnimating) return; isAnimating = true; anlStep++; 
+            const desc = document.getElementById('anl-desc');
+            const man = document.getElementById('s-man');
+            const rock = document.getElementById('s-rock');
+            const chisel = document.getElementById('s-chisel-efx');
+            const statue = document.getElementById('s-statue');
+            
+            if (anlStep === 0) {
+                man.classList.add('walk-in');
+            } else if (anlStep === 1) {
+                rock.classList.add('context-cut');
+            } else if (anlStep === 2) {
+                man.classList.replace('walk-in', 'chisel-pos');
+                await sleepGlobal(1000);
+                chisel.classList.add('active');
+                rock.classList.replace('context-cut', 'constraint-cut');
+            } else if (anlStep === 3) {
+                chisel.classList.remove('active');
+                rock.classList.add('statue-mode');
+                await sleepGlobal(800);
+                statue.classList.add('show');
+            }
+            desc.style.opacity = 0; 
+            setTimeout(() => { desc.innerHTML = anlData[anlStep].txt; desc.style.opacity = 1; isAnimating = false; }, 300); 
+        }
+
+        // NAVIGATION CONTROLLER
+        function nextSlide() {
+            if (isAnimating) return;
+            if (currentSlide === 1 && promptIntroStep < promptIntroData.length - 1) { runPromptIntroStep(); return; }
+            if (currentSlide === 2 && tcStep < tcData.length - 1) { runTcStep(); return; }
+            if (currentSlide === 3 && cfStep < cfData.length - 1) { runCfStep(); return; }
+            if (currentSlide === 4 && vsStep < vsData.length - 1) { runVsStep(); return; }
+            if (currentSlide === 5 && cnStep < cnData.length - 1) { runCnStep(); return; }
+            if (currentSlide === 6 && fmtStep < fmtData.length - 1) { runFmtStep(); return; }
+            if (currentSlide === 7 && sculptStep < sculptData.length - 1) { runSculptStep(); return; }
+            if (currentSlide === 8 && asmStep < asmData.length - 1) { runAsmStep(); return; }
+            if (currentSlide === 9 && anlStep < anlData.length - 1) { runAnlStep(); return; }
+
+            if (currentSlide < slides.length - 1) { currentSlide++; updateSlides(); }
+        }
+
+        function prevSlide() { 
+            if (isAnimating) return;
+            if (currentSlide > 0) { currentSlide--; updateSlides(); } 
+        }
+
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            else if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+        
+        // Initialize
+        updateSlides();
+    </script>
+</body>
+</html>
